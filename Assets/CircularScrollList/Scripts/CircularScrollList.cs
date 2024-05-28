@@ -222,7 +222,7 @@ namespace SCL
             {
                 if (scrollType == ScrollType.Vertical ? IsOutOfTopBound(rtf_tmp) : IsOutOfLeftBound(rtf_tmp))
                 {
-                    Debug.Log($"Delete at head");
+                    //Debug.Log($"Delete at head");
                     ReturnElement(rtf_tmp);
                     head_idx++;
                     return true;
@@ -239,7 +239,7 @@ namespace SCL
             {
                 if (scrollType == ScrollType.Vertical ? IsOutOfBottomBound(rtf_tmp) : IsOutOfRightBound(rtf_tmp))
                 {
-                    Debug.Log($"Delete at tail");
+                    //Debug.Log($"Delete at tail");
                     ReturnElement(rtf_tmp);
                     tail_idx--;
                     return true;
@@ -259,7 +259,7 @@ namespace SCL
                     Bounds first_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, first_element);
                     if (scrollType == ScrollType.Vertical? first_bounds.max.y - 0.5f * scroll_rtf.sizeDelta.y < -Space.y : first_bounds.min.x + 0.5f * scroll_rtf.sizeDelta.x > Space.x)
                     {
-                        Debug.Log("Create new at head");
+                        //Debug.Log("Create new at head");
                         int k = scrollType == ScrollType.Vertical ? Column : Row;
                         for (int i=0; i<k; i++)
                         {
@@ -273,7 +273,7 @@ namespace SCL
                 }
                 else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y < content_rft.sizeDelta.y : content_rft.localPosition.x + 0.5f *scroll_rtf.sizeDelta.x > - content_rft.sizeDelta.x)
                 {
-                    Debug.Log("Create new at head");
+                    //Debug.Log("Create new at head");
                     int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
                     for (int i=0; i<k; i++)
                     {
@@ -299,7 +299,7 @@ namespace SCL
                     Bounds last_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, last_element);
                     if (scrollType == ScrollType.Vertical ? 0.5f * scroll_rtf.sizeDelta.y + last_bounds.min.y > Space.y : 0.5f * scroll_rtf.sizeDelta.x - last_bounds.max.x > Space.x)
                     {
-                        Debug.Log("Create new at tail");
+                        //Debug.Log("Create new at tail");
                         int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1  - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
                         for (int i=0; i<k; i++)
                         {
@@ -313,7 +313,7 @@ namespace SCL
                 }
                 else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y > -scroll_rtf.sizeDelta.y : content_rft.localPosition.x < 0.5f * scroll_rtf.sizeDelta.x)
                 {
-                    Debug.Log("Create new at tail");
+                    //Debug.Log("Create new at tail");
                     int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1 - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
                     for (int i = 0; i < k; i++)
                     {
