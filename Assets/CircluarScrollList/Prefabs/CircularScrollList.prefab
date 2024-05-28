@@ -51,7 +51,7 @@ GameObject:
   - component: {fileID: 6998960094114927592}
   - component: {fileID: 6998960094114927588}
   m_Layer: 5
-  m_Name: CircluarScrollList
+  m_Name: CircularScrollList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

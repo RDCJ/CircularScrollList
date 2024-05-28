@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 namespace SCL
 {
     [RequireComponent(typeof(ScrollRect))]
-    public class CircluarScrollList : MonoBehaviour
+    public class CircularScrollList : MonoBehaviour
     {
         public enum ScrollType
         {
@@ -122,9 +122,9 @@ namespace SCL
         public void SetElementCount(int value)
         {
             if (value < 0)
-                Debug.LogError("[CircluarScrollList:SetElementCount] value < 0");
+                Debug.LogError("[CircularScrollList:SetElementCount] value < 0");
             else if (value == element_count)
-                Debug.Log("[CircluarScrollList:SetElementCount] value == this.element_count");
+                Debug.Log("[CircularScrollList:SetElementCount] value == this.element_count");
             else
             {
                 element_count = value;
