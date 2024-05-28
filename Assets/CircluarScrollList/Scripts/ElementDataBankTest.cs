@@ -8,6 +8,11 @@ using UnityEngine.UI;
 public class ElementDataTest : IElementData
 {
     public string click_log;
+
+    public ElementDataTest(string click_log)
+    {
+        this.click_log = click_log;
+    }
 }
 
 public class ElementDataBankTest : IElementDataBank
@@ -26,6 +31,8 @@ public class ElementDataBankTest : IElementDataBank
             Button button = rtf.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => { Debug.Log(data[element_idx].click_log); });
+            Text text = rtf.Find("Text").GetComponent<Text>();
+            text.text = element_idx.ToString();
         }
         else
         {
@@ -40,5 +47,11 @@ public class ElementDataBankTest : IElementDataBank
             return data[element_idx];
         }
         return null;
+    }
+
+    private void Awake()
+    {
+        for (int i = 0; i < 5000; i++)
+            data.Add(new ElementDataTest($"click: {i}"));
     }
 }
