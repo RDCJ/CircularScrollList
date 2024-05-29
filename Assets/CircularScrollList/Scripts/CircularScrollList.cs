@@ -141,7 +141,8 @@ namespace SCL
         private void Start()
         {
             element_pool_rtf.gameObject.SetActive(false);
-            RefreshGrid();
+            if (element_count > 0 )
+                RefreshGrid();
         }
 
         private void Update()
@@ -149,11 +150,13 @@ namespace SCL
             scrollRect.horizontal = scrollType == ScrollType.Horizontal;
             scrollRect.vertical = scrollType == ScrollType.Vertical;
             UpdateContentSize();
-            while (CheckDeleteHead()) ;
-            while (CheckDeleteTail()) ;
-            while (CheckCreateHead()) ;
-            while (CheckCreateTail()) ;
-            Debug.Log(scrollRect.normalizedPosition);
+            if (element_count > 0)
+            {
+                while (CheckDeleteHead()) ;
+                while (CheckDeleteTail()) ;
+                while (CheckCreateHead()) ;
+                while (CheckCreateTail()) ;
+            }
         }
 
 /*        private bool IsOutOfBound(RectTransform rtf)
@@ -363,6 +366,18 @@ namespace SCL
                 dataBank.ApplyElementData(new_element, element_idx);
             }
             return new_element;
+        }
+
+        public void RefreshAllElement()
+        {
+            if (dataBank != null)
+            {
+                for (int i = 0; i < content_rft.childCount; i++)
+                {
+                    RectTransform rtf_tmp = content_rft.GetChild(i) as RectTransform;
+                    dataBank.ApplyElementData(rtf_tmp, int.Parse(rtf_tmp.name));
+                }
+            }
         }
 
         /// <summary>
