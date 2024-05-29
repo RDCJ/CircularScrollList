@@ -368,6 +368,22 @@ namespace SCL
             return new_element;
         }
 
+        /// <summary>
+        /// 用dataBank中的数据刷新element，调用前应更新dataBank中的数据
+        /// </summary>
+        /// <param name="element_idx"></param>
+        public void RefreshElement(int element_idx)
+        {
+            if (element_idx >= head_idx && element_idx <= tail_idx)
+            {
+                RectTransform rtf_tmp = content_rft.Find(element_idx.ToString()) as RectTransform;
+                dataBank.ApplyElementData(rtf_tmp, element_idx);
+            }
+        }
+
+        /// <summary>
+        /// 用dataBank中的数据刷新所有element，调用前应更新dataBank中的数据
+        /// </summary>
         public void RefreshAllElement()
         {
             if (dataBank != null)
