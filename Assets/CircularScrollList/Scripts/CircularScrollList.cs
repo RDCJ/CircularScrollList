@@ -156,6 +156,7 @@ namespace SCL
             while (CheckDeleteTail()) ;
             while (CheckCreateHead()) ;
             while (CheckCreateTail()) ;
+            Debug.Log(scrollRect.normalizedPosition);
         }
 
 /*        private bool IsOutOfBound(RectTransform rtf)
@@ -367,6 +368,11 @@ namespace SCL
             return new_element;
         }
 
+        /// <summary>
+        /// 计算element在content中的位置
+        /// </summary>
+        /// <param name="element_idx"></param>
+        /// <returns></returns>
         public Vector3 CalcElementPosition(int element_idx)
         {
             if (scrollType == ScrollType.Vertical)
@@ -386,6 +392,31 @@ namespace SCL
                     0.5f * CellSize.x + column_idx * (CellSize.x + Space.x),
                     -0.5f * CellSize.y - row_idx * (CellSize.y + Space.y),
                     0);
+            }
+        }
+
+        /// <summary>
+        /// 滚动到指定element的位置
+        /// </summary>
+        /// <param name="element_idx"></param>
+        /// <param name="viewport_position">滚动结束时element在viewport中的位置，0~1</param>
+        public void ScrollToElement(int element_idx, float viewport_position)
+        {
+            viewport_position = Mathf.Clamp01(viewport_position);
+            viewport_position = 0.5f - viewport_position;
+            if (scrollType == ScrollType.Vertical)
+            {
+                int row_idx = element_idx / Column;
+                Vector3 p = content_rft.localPosition;
+                p.y = row_idx * (CellSize.y + Space.y) + CellSize.y * 0.5f + (scroll_rtf.sizeDelta.y - CellSize.y - Space.y) * viewport_position;
+                content_rft.localPosition = p;
+            }
+            else
+            {
+                int column_idx = element_idx / Row;
+                Vector3 p = content_rft.localPosition;
+                p.x = -column_idx * (CellSize.x + Space.x) - CellSize.x * 0.5f - (scroll_rtf.sizeDelta.x - CellSize.x - Space.x) * viewport_position;
+                content_rft.localPosition = p;
             }
         }
     }
