@@ -33,7 +33,7 @@ namespace SCL
         /// 元素预制体
         /// </summary>
         public GameObject element_prefab;
-
+        private RectTransform element_prefab_rtf;
         #region component
         [HideInInspector]
         public ScrollRect scrollRect;
@@ -92,12 +92,12 @@ namespace SCL
             {
                 if (scrollType== ScrollType.Vertical)
                 {
-                    int row = (int)(scroll_rtf.sizeDelta.y / (CellSize.y + Space.y)) + 2;
+                    int row = (int)(scroll_rtf.rect.height / (CellSize.y + Space.y)) + 2;
                     return Mathf.Min(ElementCount, Column * row);
                 }
                 else
                 {
-                    int column = (int)(scroll_rtf.sizeDelta.x / (CellSize.x + Space.x)) + 2;
+                    int column = (int)(scroll_rtf.rect.width / (CellSize.x + Space.x)) + 2;
                     return Mathf.Min(ElementCount, column * Row);
                 }
                 
@@ -136,6 +136,8 @@ namespace SCL
             viewport_rtf = scroll_rtf.Find("Viewport").GetComponent<RectTransform>();
             content_rft = viewport_rtf.Find("Content").GetComponent<RectTransform>();
             element_pool = new Stack<GameObject>();
+
+            element_prefab_rtf = element_prefab.GetComponent<RectTransform>();
         }
 
         private void Start()
@@ -163,35 +165,35 @@ namespace SCL
         {
             Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
             if (bound.min.y > 0) return true;
-            if (bound.center.y + bound.size.y * 0.5 < -scroll_rtf.sizeDelta.y) return true;
+            if (bound.center.y + bound.size.y * 0.5 < -scroll_rtf.rect.height) return true;
             return false;
         }*/
 
         private bool IsOutOfTopBound(RectTransform rtf)
         {
             Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
-            if (bound.min.y - 0.5f * scroll_rtf.sizeDelta.y > 0) return true;
+            if (bound.min.y - 0.5f * scroll_rtf.rect.height > 0) return true;
             return false;
         }
 
         private bool IsOutOfBottomBound(RectTransform rtf)
         {
             Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
-            if (bound.max.y + 0.5f * scroll_rtf.sizeDelta.y < 0) return true;
+            if (bound.max.y + 0.5f * scroll_rtf.rect.height < 0) return true;
             return false;
         }
 
         private bool IsOutOfLeftBound(RectTransform rtf)
         {
             Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
-            if (bound.max.x + 0.5f * scroll_rtf.sizeDelta.x< 0) return true;
+            if (bound.max.x + 0.5f * scroll_rtf.rect.width< 0) return true;
             return false;
         }
 
         private bool IsOutOfRightBound(RectTransform rtf)
         {
             Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
-            if (bound.min.x  > 0.5f * scroll_rtf.sizeDelta.x) return true;
+            if (bound.min.x  > 0.5f * scroll_rtf.rect.width) return true;
             return false;
         }
 
@@ -258,7 +260,7 @@ namespace SCL
                 if (first_element != null)
                 {
                     Bounds first_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, first_element);
-                    if (scrollType == ScrollType.Vertical? first_bounds.max.y - 0.5f * scroll_rtf.sizeDelta.y < -Space.y : first_bounds.min.x + 0.5f * scroll_rtf.sizeDelta.x > Space.x)
+                    if (scrollType == ScrollType.Vertical? first_bounds.max.y - 0.5f * scroll_rtf.rect.height < -Space.y : first_bounds.min.x + 0.5f * scroll_rtf.rect.width > Space.x)
                     {
                         //Debug.Log("Create new at head");
                         int k = scrollType == ScrollType.Vertical ? Column : Row;
@@ -272,7 +274,7 @@ namespace SCL
                         return true;
                     }
                 }
-                else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y < content_rft.sizeDelta.y : content_rft.localPosition.x + 0.5f *scroll_rtf.sizeDelta.x > - content_rft.sizeDelta.x)
+                else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y < content_rft.sizeDelta.y : content_rft.localPosition.x + 0.5f *scroll_rtf.rect.width > - content_rft.sizeDelta.x)
                 {
                     //Debug.Log("Create new at head");
                     int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
@@ -298,7 +300,7 @@ namespace SCL
                 if (last_element != null)
                 {
                     Bounds last_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, last_element);
-                    if (scrollType == ScrollType.Vertical ? 0.5f * scroll_rtf.sizeDelta.y + last_bounds.min.y > Space.y : 0.5f * scroll_rtf.sizeDelta.x - last_bounds.max.x > Space.x)
+                    if (scrollType == ScrollType.Vertical ? 0.5f * scroll_rtf.rect.height + last_bounds.min.y > Space.y : 0.5f * scroll_rtf.rect.width - last_bounds.max.x > Space.x)
                     {
                         //Debug.Log("Create new at tail");
                         int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1  - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
@@ -312,7 +314,7 @@ namespace SCL
                         return true;
                     }
                 }
-                else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y > -scroll_rtf.sizeDelta.y : content_rft.localPosition.x < 0.5f * scroll_rtf.sizeDelta.x)
+                else if (scrollType == ScrollType.Vertical ? content_rft.anchoredPosition.y > -scroll_rtf.rect.height : content_rft.localPosition.x < 0.5f * scroll_rtf.rect.width)
                 {
                     //Debug.Log("Create new at tail");
                     int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1 - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
@@ -357,6 +359,9 @@ namespace SCL
             else
             {
                 new_element = Instantiate(element_prefab, content_rft).GetComponent<RectTransform>();
+                // 固定anchor
+                new_element.anchorMin = new Vector2(0, 1);
+                new_element.anchorMax = new Vector2(0, 1);
             }
             new_element.name = element_idx.ToString();
             new_element.sizeDelta = CellSize;
@@ -403,14 +408,16 @@ namespace SCL
         /// <returns></returns>
         public Vector3 CalcElementPosition(int element_idx)
         {
+            Vector3 pivot_offset = (element_prefab_rtf.pivot - new Vector2(0.5f, 0.5f)) * CellSize;
             if (scrollType == ScrollType.Vertical)
             {
                 int row_idx = element_idx / Column;
                 int column_idx = element_idx % Column;
+                
                 return new Vector3(
                     0.5f * CellSize.x + column_idx * (CellSize.x + Space.x),
                     -0.5f * CellSize.y - row_idx * (CellSize.y + Space.y),
-                    0);
+                    0) + pivot_offset;
             }
             else
             {
@@ -419,7 +426,7 @@ namespace SCL
                 return new Vector3(
                     0.5f * CellSize.x + column_idx * (CellSize.x + Space.x),
                     -0.5f * CellSize.y - row_idx * (CellSize.y + Space.y),
-                    0);
+                    0) + pivot_offset;
             }
         }
 
@@ -436,14 +443,14 @@ namespace SCL
             {
                 int row_idx = element_idx / Column;
                 Vector3 p = content_rft.localPosition;
-                p.y = row_idx * (CellSize.y + Space.y) + CellSize.y * 0.5f + (scroll_rtf.sizeDelta.y - CellSize.y - Space.y) * viewport_position;
+                p.y = row_idx * (CellSize.y + Space.y) + CellSize.y * 0.5f + (scroll_rtf.rect.height - CellSize.y - Space.y) * viewport_position;
                 content_rft.localPosition = p;
             }
             else
             {
                 int column_idx = element_idx / Row;
                 Vector3 p = content_rft.localPosition;
-                p.x = -column_idx * (CellSize.x + Space.x) - CellSize.x * 0.5f - (scroll_rtf.sizeDelta.x - CellSize.x - Space.x) * viewport_position;
+                p.x = -column_idx * (CellSize.x + Space.x) - CellSize.x * 0.5f - (scroll_rtf.rect.width - CellSize.x - Space.x) * viewport_position;
                 content_rft.localPosition = p;
             }
         }
