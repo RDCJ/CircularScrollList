@@ -104,6 +104,17 @@ namespace SCL
             }
         }
 
+        #region Const
+        private Vector2 ElementAnchor = new(0, 1);
+        private Vector2 ContentAnchorVertical = new(0.5f, 1);
+        private Vector2 ContentAnchorHorizontal = new(0, 0.5f);
+        private Vector2 ContentPivotVertical = new(0.5f, 1);
+        private Vector2 ContentPivotHorizontal = new(0, 0.5f);
+        #endregion
+
+        public AnimationCurve position_offset_curve;
+        public AnimationCurve scale_curve;
+
         public void RefreshGrid()
         {
             ReturnAllElement();
@@ -159,15 +170,9 @@ namespace SCL
                 while (CheckCreateHead()) ;
                 while (CheckCreateTail()) ;
             }
-        }
 
-/*        private bool IsOutOfBound(RectTransform rtf)
-        {
-            Bounds bound = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf);
-            if (bound.min.y > 0) return true;
-            if (bound.center.y + bound.size.y * 0.5 < -scroll_rtf.rect.height) return true;
-            return false;
-        }*/
+            UpdateWithCurve();
+        }
 
         private bool IsOutOfTopBound(RectTransform rtf)
         {
@@ -201,6 +206,9 @@ namespace SCL
         {
             if (scrollType == ScrollType.Vertical)
             {
+                content_rft.anchorMin = ContentAnchorVertical;
+                content_rft.anchorMax = ContentAnchorVertical;
+                content_rft.pivot = ContentPivotVertical;
                 Vector2 content_size = content_rft.sizeDelta;
                 content_size.x = CellSize.x * Column + Space.x * (Column - 1);
                 int row = element_count / Column + (element_count % Column == 0 ? 0 : 1);
@@ -209,6 +217,9 @@ namespace SCL
             }
             else
             {
+                content_rft.anchorMin = ContentAnchorHorizontal;
+                content_rft.anchorMax = ContentAnchorHorizontal;
+                content_rft.pivot = ContentPivotHorizontal;
                 Vector2 content_size = content_rft.sizeDelta;
                 content_size.y = CellSize.y * Row + Space.y * (Row - 1);
                 int column = element_count / Row + (element_count % Row == 0 ? 0 : 1);
@@ -231,7 +242,7 @@ namespace SCL
                     return true;
                 }
             }
-            return false;
+            return false; 
         }
 
         public bool CheckDeleteTail()
@@ -331,6 +342,35 @@ namespace SCL
             return false;
         }
 
+        private void UpdateWithCurve()
+        {
+            Vector3 v = new Vector3(0, 0, 0);
+            for (int i = 0; i < content_rft.childCount; i++)
+            {
+                RectTransform rtf_tmp = content_rft.GetChild(i).GetComponent<RectTransform>();
+                int element_idx = int.Parse(rtf_tmp.name);
+                Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport_rtf, rtf_tmp);
+                float percent;
+                if (scrollType == ScrollType.Vertical)
+                {
+                    percent = (0.5f * scroll_rtf.rect.height - bounds.center.y) / scroll_rtf.rect.height;
+                    v.x = position_offset_curve.Evaluate(percent) * scroll_rtf.rect.width;
+                    v.y = 0;
+                }
+                else
+                {
+                    percent = (bounds.center.x + 0.5f * scroll_rtf.rect.width) / scroll_rtf.rect.width;
+                    v.x = 0;
+                    v.y = position_offset_curve.Evaluate(percent) * scroll_rtf.rect.width;
+                }
+                float scale = scale_curve.Evaluate(percent);
+
+                rtf_tmp.anchoredPosition = CalcElementPosition(element_idx) + v;
+
+                rtf_tmp.localScale = new Vector3(scale, scale, scale);
+            }
+        } 
+
         private void ReturnElement(Transform element)
         {
             element_pool.Push(element.gameObject);
@@ -360,8 +400,8 @@ namespace SCL
             {
                 new_element = Instantiate(element_prefab, content_rft).GetComponent<RectTransform>();
                 // ¹Ì¶¨anchor
-                new_element.anchorMin = new Vector2(0, 1);
-                new_element.anchorMax = new Vector2(0, 1);
+                new_element.anchorMin = ElementAnchor;
+                new_element.anchorMax = ElementAnchor;
             }
             new_element.name = element_idx.ToString();
             new_element.sizeDelta = CellSize;
