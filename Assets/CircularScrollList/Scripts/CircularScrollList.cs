@@ -21,7 +21,18 @@ namespace SCL
         #region grid format
         public int Column;
         public int Row;
-        public Vector2 CellSize;
+        public bool use_prefab_size;
+        public Vector2 cellSize;
+        public Vector2 CellSize
+        {
+            get
+            {
+                if (use_prefab_size)
+                    return element_prefab_rtf.rect.size;
+                else
+                    return cellSize;
+            }
+        }
         public Vector2 Space;
         #endregion
         /// <summary>
@@ -50,10 +61,8 @@ namespace SCL
         /// <summary>
         /// 对象池中的GameObject放置于此
         /// </summary>
-        public RectTransform element_pool_rtf;
+        private Transform element_pool_rtf;
         
-        
-
         private RectTransform FirstElementRtf
         {
             get
@@ -111,8 +120,17 @@ namespace SCL
         private Vector2 ContentPivotVertical = new(0.5f, 1);
         private Vector2 ContentPivotHorizontal = new(0, 0.5f);
         #endregion
-
+        /// <summary>
+        /// 启用曲线
+        /// </summary>
+        public bool enable_curve;
+        /// <summary>
+        /// 采样曲线：根据element的位置动态更新postion
+        /// </summary>
         public AnimationCurve position_offset_curve;
+        /// <summary>
+        /// 采样曲线：根据element的位置动态更新scale
+        /// </summary>
         public AnimationCurve scale_curve;
 
         public void RefreshGrid()
@@ -146,6 +164,13 @@ namespace SCL
             scroll_rtf = scrollRect.GetComponent<RectTransform>();
             viewport_rtf = scroll_rtf.Find("Viewport").GetComponent<RectTransform>();
             content_rft = viewport_rtf.Find("Content").GetComponent<RectTransform>();
+
+            element_pool_rtf = viewport_rtf.Find("Element_Pool");
+            if (element_pool_rtf == null)
+            {
+                element_pool_rtf = new GameObject("Element_Pool").transform;
+                element_pool_rtf.parent = viewport_rtf;
+            }
             element_pool = new Stack<GameObject>();
 
             element_prefab_rtf = element_prefab.GetComponent<RectTransform>();
@@ -171,7 +196,8 @@ namespace SCL
                 while (CheckCreateTail()) ;
             }
 
-            UpdateWithCurve();
+            if (enable_curve)
+                UpdateWithCurve();
         }
 
         private bool IsOutOfTopBound(RectTransform rtf)
@@ -363,10 +389,10 @@ namespace SCL
                     v.x = 0;
                     v.y = position_offset_curve.Evaluate(percent) * scroll_rtf.rect.width;
                 }
-                float scale = scale_curve.Evaluate(percent);
-
+               
                 rtf_tmp.anchoredPosition = CalcElementPosition(element_idx) + v;
 
+                float scale = scale_curve.Evaluate(percent);
                 rtf_tmp.localScale = new Vector3(scale, scale, scale);
             }
         } 
