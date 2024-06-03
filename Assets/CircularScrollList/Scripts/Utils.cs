@@ -13,7 +13,7 @@ namespace SCL
                 children[i] = tf.GetChild(i);
             foreach (var child in children)
             {
-                GameObject.Destroy(child.gameObject);
+                GameObject.DestroyImmediate(child.gameObject);
             }
         }
     }

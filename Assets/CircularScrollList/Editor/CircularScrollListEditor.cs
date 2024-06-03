@@ -60,6 +60,18 @@ public class CircularScrollListEditor : Editor
             EditorUtility.SetDirty(target);
             serializedObject.ApplyModifiedProperties();
         }
+
+        if (GUILayout.Button("Refresh Grid"))
+        {
+            scrollList.ClearGrid();
+            scrollList.RefreshGrid();
+            scrollList.ScrollToElement(0, 0);
+        }
+
+        if (GUILayout.Button("Clear Grid"))
+        {
+            scrollList.ClearGrid();
+        }
     }
 
     /// <summary>
