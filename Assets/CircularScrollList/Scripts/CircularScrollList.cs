@@ -17,6 +17,10 @@ namespace SCL
         /// 滚动方向
         /// </summary>
         public ScrollType scrollType;
+        /// <summary>
+        /// 是否反向
+        /// </summary>
+        public bool Reverse;
 
         #region grid format
         public int Column;
@@ -188,8 +192,9 @@ namespace SCL
         private Vector2 ElementAnchor = new(0, 1);
         private Vector2 ContentAnchorVertical = new(0.5f, 1);
         private Vector2 ContentAnchorHorizontal = new(0, 0.5f);
-        private Vector2 ContentPivotVertical = new(0.5f, 1);
-        private Vector2 ContentPivotHorizontal = new(0, 0.5f);
+
+        private Vector2 ContentAnchorVerticalReverse = new(0.5f, 0);
+        private Vector2 ContentAnchorHorizontalReverse = new(1, 0.5f);
         #endregion
         /// <summary>
         /// 启用曲线
@@ -239,6 +244,10 @@ namespace SCL
             ElementPoolRtf.gameObject.SetActive(false);
             if (element_count > 0 )
                 RefreshGrid();
+            if (scrollType == ScrollType.Vertical)
+                ContentRtf.anchoredPosition = new Vector2(0, ContentRtf.anchoredPosition.y);
+            else
+                ContentRtf.anchoredPosition = new Vector2(ContentRtf.anchoredPosition.x, 0);
         }
 
         private void Update()
@@ -290,9 +299,9 @@ namespace SCL
         {
             if (scrollType == ScrollType.Vertical)
             {
-                ContentRtf.anchorMin = ContentAnchorVertical;
-                ContentRtf.anchorMax = ContentAnchorVertical;
-                ContentRtf.pivot = ContentPivotVertical;
+                ContentRtf.anchorMin = Reverse ? ContentAnchorVerticalReverse : ContentAnchorVertical;
+                ContentRtf.anchorMax = Reverse ? ContentAnchorVerticalReverse : ContentAnchorVertical;
+                ContentRtf.pivot = Reverse ? ContentAnchorVerticalReverse : ContentAnchorVertical;
                 Vector2 content_size = ContentRtf.sizeDelta;
                 content_size.x = CellSize.x * Column + Space.x * (Column - 1);
                 int row = element_count / Column + (element_count % Column == 0 ? 0 : 1);
@@ -301,9 +310,9 @@ namespace SCL
             }
             else
             {
-                ContentRtf.anchorMin = ContentAnchorHorizontal;
-                ContentRtf.anchorMax = ContentAnchorHorizontal;
-                ContentRtf.pivot = ContentPivotHorizontal;
+                ContentRtf.anchorMin = Reverse ? ContentAnchorHorizontalReverse : ContentAnchorHorizontal;
+                ContentRtf.anchorMax = Reverse ? ContentAnchorHorizontalReverse : ContentAnchorHorizontal;
+                ContentRtf.pivot = Reverse ? ContentAnchorHorizontalReverse : ContentAnchorHorizontal;
                 Vector2 content_size = ContentRtf.sizeDelta;
                 content_size.y = CellSize.y * Row + Space.y * (Row - 1);
                 int column = element_count / Row + (element_count % Row == 0 ? 0 : 1);
@@ -318,7 +327,16 @@ namespace SCL
             RectTransform rtf_tmp = FirstElementRtf;
             if (rtf_tmp != null)
             {
-                if (scrollType == ScrollType.Vertical ? IsOutOfTopBound(rtf_tmp) : IsOutOfLeftBound(rtf_tmp))
+                bool is_out;
+                if (scrollType == ScrollType.Vertical)
+                {
+                    is_out = Reverse ? IsOutOfBottomBound(rtf_tmp) : IsOutOfTopBound(rtf_tmp);
+                }
+                else
+                {
+                    is_out = Reverse ? IsOutOfRightBound(rtf_tmp) : IsOutOfLeftBound(rtf_tmp);
+                }
+                if (is_out)
                 {
                     //Debug.Log($"Delete at head");
                     ReturnElement(rtf_tmp);
@@ -335,7 +353,16 @@ namespace SCL
             RectTransform rtf_tmp = LastElementRtf;
             if (rtf_tmp != null)
             {
-                if (scrollType == ScrollType.Vertical ? IsOutOfBottomBound(rtf_tmp) : IsOutOfRightBound(rtf_tmp))
+                bool is_out;
+                if (scrollType == ScrollType.Vertical)
+                {
+                    is_out = Reverse ? IsOutOfTopBound(rtf_tmp)  : IsOutOfBottomBound(rtf_tmp);
+                }
+                else
+                {
+                    is_out = Reverse ? IsOutOfLeftBound(rtf_tmp) : IsOutOfRightBound(rtf_tmp);
+                }
+                if (is_out)
                 {
                     //Debug.Log($"Delete at tail");
                     ReturnElement(rtf_tmp);
@@ -354,12 +381,17 @@ namespace SCL
                 RectTransform first_element = FirstElementRtf;
                 if (first_element != null)
                 {
-                    Bounds first_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(ViewportRtf, first_element);
-                    if (scrollType == ScrollType.Vertical? first_bounds.max.y - 0.5f * ScrollRtf.rect.height < -Space.y : first_bounds.min.x + 0.5f * ScrollRtf.rect.width > Space.x)
+                    Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(ViewportRtf, first_element);
+                    bool need_create;
+                    if (scrollType == ScrollType.Vertical)
+                        need_create = Reverse ? 0.5f * ScrollRtf.rect.height + bounds.min.y > Space.y : bounds.max.y - 0.5f * ScrollRtf.rect.height < -Space.y;
+                    else
+                        need_create = Reverse ? 0.5f * ScrollRtf.rect.width - bounds.max.x > Space.x : bounds.min.x + 0.5f * ScrollRtf.rect.width > Space.x;
+                    if (need_create)
                     {
                         //Debug.Log("Create new at head");
                         int k = scrollType == ScrollType.Vertical ? Column : Row;
-                        for (int i=0; i<k; i++)
+                        for (int i = 0; i < k; i++)
                         {
                             head_idx--;
                             RectTransform new_element = GetNewElement(head_idx);
@@ -369,19 +401,27 @@ namespace SCL
                         return true;
                     }
                 }
-                else if (scrollType == ScrollType.Vertical ? ContentRtf.anchoredPosition.y < ContentRtf.sizeDelta.y : ContentRtf.localPosition.x + 0.5f *ScrollRtf.rect.width > - ContentRtf.sizeDelta.x)
+                else
                 {
-                    //Debug.Log("Create new at head");
-                    int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
-                    for (int i=0; i<k; i++)
+                    bool need_create;
+                    if (scrollType == ScrollType.Vertical)
+                        need_create = Reverse ? ContentRtf.anchoredPosition.y > -ContentRtf.rect.height : ContentRtf.anchoredPosition.y < ContentRtf.rect.height;
+                    else
+                        need_create = Reverse ? ContentRtf.anchoredPosition.x < ContentRtf.rect.width : ContentRtf.anchoredPosition.x  > -ContentRtf.rect.width;
+                    if (need_create)
                     {
-                        head_idx--;
-                        RectTransform new_element = GetNewElement(head_idx);
-                        new_element.SetAsFirstSibling();
-                        if (head_idx <= 0) break;
+                        //Debug.Log("Create new at head");
+                        int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0 ? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
+                        for (int i = 0; i < k; i++)
+                        {
+                            head_idx--;
+                            RectTransform new_element = GetNewElement(head_idx);
+                            new_element.SetAsFirstSibling();
+                            if (head_idx <= 0) break;
+                        }
+                        return true;
                     }
-                    return true;
-                }
+                }  
             }
             return false;
         }
@@ -394,8 +434,15 @@ namespace SCL
                 RectTransform last_element = LastElementRtf;
                 if (last_element != null)
                 {
-                    Bounds last_bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(ViewportRtf, last_element);
-                    if (scrollType == ScrollType.Vertical ? 0.5f * ScrollRtf.rect.height + last_bounds.min.y > Space.y : 0.5f * ScrollRtf.rect.width - last_bounds.max.x > Space.x)
+                    Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(ViewportRtf, last_element);
+
+                    bool need_create;
+                    if (scrollType == ScrollType.Vertical)
+                        need_create = Reverse ? bounds.max.y - 0.5f * ScrollRtf.rect.height < -Space.y : 0.5f * ScrollRtf.rect.height + bounds.min.y > Space.y;
+                    else
+                        need_create = Reverse ? bounds.min.x + 0.5f * ScrollRtf.rect.width > Space.x : 0.5f * ScrollRtf.rect.width - bounds.max.x > Space.x;
+
+                    if (need_create)
                     {
                         //Debug.Log("Create new at tail");
                         int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1  - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
@@ -409,19 +456,29 @@ namespace SCL
                         return true;
                     }
                 }
-                else if (scrollType == ScrollType.Vertical ? ContentRtf.anchoredPosition.y > -ScrollRtf.rect.height : ContentRtf.localPosition.x < 0.5f * ScrollRtf.rect.width)
+                else
                 {
-                    //Debug.Log("Create new at tail");
-                    int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1 - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
-                    for (int i = 0; i < k; i++)
+                    bool need_create;
+                    if (scrollType == ScrollType.Vertical)
+                        need_create = Reverse ? ContentRtf.anchoredPosition.y < ScrollRtf.rect.height : ContentRtf.anchoredPosition.y > -ScrollRtf.rect.height;
+                    else
+                        need_create = Reverse ? ContentRtf.anchoredPosition.x > -ScrollRtf.rect.width : ContentRtf.anchoredPosition.x < ScrollRtf.rect.width;
+
+                    if (need_create)
                     {
-                        tail_idx++;
-                        RectTransform new_element = GetNewElement(tail_idx);
-                        new_element.SetAsLastSibling();
-                        if (tail_idx >= element_count - 1) break;
+                        //Debug.Log("Create new at tail");
+                        int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1 - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
+                        for (int i = 0; i < k; i++)
+                        {
+                            tail_idx++;
+                            RectTransform new_element = GetNewElement(tail_idx);
+                            new_element.SetAsLastSibling();
+                            if (tail_idx >= element_count - 1) break;
+                        }
+                        return true;
                     }
-                    return true;
                 }
+                
             }
             return false;
         }
@@ -487,6 +544,10 @@ namespace SCL
                 new_element.anchorMin = ElementAnchor;
                 new_element.anchorMax = ElementAnchor;
             }
+            if (element_idx == 502)
+            {
+                int x = 0;
+            }
             new_element.name = element_idx.ToString();
             new_element.sizeDelta = CellSize;
             new_element.anchoredPosition = CalcElementPosition(element_idx);
@@ -532,12 +593,24 @@ namespace SCL
         /// <returns></returns>
         public Vector3 CalcElementPosition(int element_idx)
         {
+            Vector3 defaultPosition = CalcDefalutElementPosition(element_idx);
+            if (dataBank != null && dataBank.OverrideCalcElementPosition)
+            {
+                return dataBank.CalcElementPosition(scrollType, element_idx, defaultPosition);
+            }
+            else
+            {
+                return defaultPosition;
+            }
+        }
+
+        public Vector3 CalcDefalutElementPosition(int element_idx)
+        {
             Vector3 pivot_offset = (ElementPrefabRtf.pivot - new Vector2(0.5f, 0.5f)) * CellSize;
             if (scrollType == ScrollType.Vertical)
             {
-                int row_idx = element_idx / Column;
+                int row_idx = Reverse ? ElementCount / Column + (ElementCount % Column == 0 ? 0 : 1) - element_idx / Column - 1 : element_idx / Column;
                 int column_idx = element_idx % Column;
-                
                 return new Vector3(
                     0.5f * CellSize.x + column_idx * (CellSize.x + Space.x),
                     -0.5f * CellSize.y - row_idx * (CellSize.y + Space.y),
@@ -546,7 +619,7 @@ namespace SCL
             else
             {
                 int row_idx = element_idx % Row;
-                int column_idx = element_idx / Row;
+                int column_idx = Reverse ? ElementCount / Row + (ElementCount % Row == 0 ? 0 : 1) - element_idx / Row  - 1 : element_idx / Row;
                 return new Vector3(
                     0.5f * CellSize.x + column_idx * (CellSize.x + Space.x),
                     -0.5f * CellSize.y - row_idx * (CellSize.y + Space.y),

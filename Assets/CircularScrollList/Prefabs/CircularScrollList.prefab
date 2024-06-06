@@ -33,7 +33,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -19.5, y: 0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1064, y: 300}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &6998960094114927594
@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollType: 1
+  Reverse: 0
   Column: 1
   Row: 5
   use_prefab_size: 0
@@ -471,7 +472,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6998960094527411725}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9996786
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -709,7 +710,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6998960094184098184}
   m_HandleRect: {fileID: 6998960094184098185}
   m_Direction: 0
-  m_Value: 20
+  m_Value: 0.5
   m_Size: 0.99906015
   m_NumberOfSteps: 0
   m_OnValueChanged:
