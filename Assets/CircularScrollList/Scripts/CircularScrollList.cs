@@ -62,7 +62,7 @@ namespace SCL
         [HideInInspector]
         private ScrollRect scrollRect;
 
-        private ScrollRect _ScrollRect
+        public ScrollRect _ScrollRect
         {
             get
             {
@@ -72,7 +72,7 @@ namespace SCL
             }
         }
         private RectTransform scroll_rtf;
-        private RectTransform ScrollRtf
+        public RectTransform ScrollRtf
         {
             get
             {
@@ -82,7 +82,7 @@ namespace SCL
             }
         }
         private RectTransform viewport_rtf;
-        private RectTransform ViewportRtf
+        public RectTransform ViewportRtf
         {
             get
             {
@@ -92,7 +92,7 @@ namespace SCL
             }
         }
         private RectTransform content_rtf;
-        private RectTransform ContentRtf
+        public RectTransform ContentRtf
         {
             get
             {
@@ -635,20 +635,21 @@ namespace SCL
         public void ScrollToElement(int element_idx, float viewport_position)
         {
             viewport_position = Mathf.Clamp01(viewport_position);
-            viewport_position = 0.5f - viewport_position;
             if (scrollType == ScrollType.Vertical)
             {
+                viewport_position = (Reverse ? 1 : 0) - viewport_position;
                 int row_idx = element_idx / Column;
-                Vector3 p = ContentRtf.localPosition;
-                p.y = row_idx * (CellSize.y + Space.y) + CellSize.y * 0.5f + (ScrollRtf.rect.height - CellSize.y - Space.y) * viewport_position;
-                ContentRtf.localPosition = p;
+                Vector2 p = ContentRtf.anchoredPosition;
+                p.y = row_idx * (CellSize.y + Space.y) * (Reverse ? -1 : 1) + (ScrollRtf.rect.height - CellSize.y) * viewport_position;
+                ContentRtf.anchoredPosition = p;
             }
             else
             {
+               viewport_position = viewport_position - (Reverse ? 1 : 0);
                 int column_idx = element_idx / Row;
-                Vector3 p = ContentRtf.localPosition;
-                p.x = -column_idx * (CellSize.x + Space.x) - CellSize.x * 0.5f - (ScrollRtf.rect.width - CellSize.x - Space.x) * viewport_position;
-                ContentRtf.localPosition = p;
+                Vector3 p = ContentRtf.anchoredPosition;
+                p.x = column_idx * (CellSize.x + Space.x) * (Reverse ? 1 : -1) + (ScrollRtf.rect.width - CellSize.x) * viewport_position;
+                ContentRtf.anchoredPosition = p;
             }
         }
 
