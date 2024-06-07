@@ -193,12 +193,12 @@ namespace SCL
         }
 
         #region Const
-        private Vector2 ElementAnchor = new(0, 1);
-        private Vector2 ContentAnchorVertical = new(0.5f, 1);
-        private Vector2 ContentAnchorHorizontal = new(0, 0.5f);
+        private Vector2 ElementAnchor = new Vector2(0, 1);
+        private Vector2 ContentAnchorVertical = new Vector2(0.5f, 1);
+        private Vector2 ContentAnchorHorizontal = new Vector2(0, 0.5f);
 
-        private Vector2 ContentAnchorVerticalReverse = new(0.5f, 0);
-        private Vector2 ContentAnchorHorizontalReverse = new(1, 0.5f);
+        private Vector2 ContentAnchorVerticalReverse = new Vector2(0.5f, 0);
+        private Vector2 ContentAnchorHorizontalReverse = new Vector2(1, 0.5f);
         #endregion
         /// <summary>
         /// ∆Ù”√«˙œﬂ
