@@ -34,6 +34,7 @@ public class CircularScrollListEditor : Editor
         properties = new List<SerializedPropertyExtend>();
         RegisterSerializedProperty("scrollType");
         RegisterSerializedProperty("Reverse");
+        RegisterSerializedProperty("SiblingOrderReverse");
         RegisterSerializedProperty("Column", ()=> scrollList.scrollType == CircularScrollList.ScrollType.Vertical);
         RegisterSerializedProperty("Row", () => scrollList.scrollType == CircularScrollList.ScrollType.Horizontal);
         RegisterSerializedProperty("use_prefab_size");

@@ -18,9 +18,13 @@ namespace SCL
         /// </summary>
         public ScrollType scrollType;
         /// <summary>
-        /// 是否反向
+        /// 排列是否反向
         /// </summary>
         public bool Reverse;
+        /// <summary>
+        /// element在Hierachy中是否按照idx反向排列
+        /// </summary>
+        public bool SiblingOrderReverse;
 
         #region grid format
         public int Column;
@@ -137,13 +141,13 @@ namespace SCL
             }
             
         }
-        
+
         private RectTransform FirstElementRtf
         {
             get
             {
                 if (ContentRtf.childCount == 0) return null;
-                return ContentRtf.GetChild(0) as RectTransform;
+                return (SiblingOrderReverse ? ContentRtf.GetChild(ContentRtf.childCount - 1) : ContentRtf.GetChild(0) ) as RectTransform;
             }
         }
 
@@ -152,7 +156,7 @@ namespace SCL
             get
             {
                 if (ContentRtf.childCount == 0) return null;
-                return ContentRtf.GetChild(ContentRtf.childCount - 1) as RectTransform;
+                return (SiblingOrderReverse ? ContentRtf.GetChild(0) : ContentRtf.GetChild(ContentRtf.childCount - 1)) as RectTransform;
             }
         }
         /// <summary>
@@ -215,7 +219,11 @@ namespace SCL
             UpdateContentSize();
             for (int i = 0; i < ElementShowCount; i++)
             {
-                GetNewElement(i);
+                var new_element = GetNewElement(i);
+                if (SiblingOrderReverse)
+                    new_element.SetAsFirstSibling();
+                else
+                    new_element.SetAsLastSibling();
             }
             head_idx = 0;
             tail_idx = ElementShowCount - 1;
@@ -373,6 +381,20 @@ namespace SCL
             return false;
         }
 
+        private void CreateAtHead(int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                head_idx--;
+                RectTransform new_element = GetNewElement(head_idx);
+                if (SiblingOrderReverse)
+                    new_element.SetAsLastSibling();
+                else
+                    new_element.SetAsFirstSibling();
+                if (head_idx <= 0) break;
+            }
+        }
+
         public bool CheckCreateHead()
         {
             if (tail_idx - head_idx + 1 >= ElementShowCount) return false; 
@@ -391,13 +413,7 @@ namespace SCL
                     {
                         //Debug.Log("Create new at head");
                         int k = scrollType == ScrollType.Vertical ? Column : Row;
-                        for (int i = 0; i < k; i++)
-                        {
-                            head_idx--;
-                            RectTransform new_element = GetNewElement(head_idx);
-                            new_element.SetAsFirstSibling();
-                            if (head_idx <= 0) break;
-                        }
+                        CreateAtHead(k);
                         return true;
                     }
                 }
@@ -412,18 +428,26 @@ namespace SCL
                     {
                         //Debug.Log("Create new at head");
                         int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0 ? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
-                        for (int i = 0; i < k; i++)
-                        {
-                            head_idx--;
-                            RectTransform new_element = GetNewElement(head_idx);
-                            new_element.SetAsFirstSibling();
-                            if (head_idx <= 0) break;
-                        }
+                        CreateAtHead(k);
                         return true;
                     }
                 }  
             }
             return false;
+        }
+
+        private void CreateAtTail(int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                tail_idx++;
+                RectTransform new_element = GetNewElement(tail_idx);
+                if (SiblingOrderReverse)
+                    new_element.SetAsFirstSibling();
+                else
+                    new_element.SetAsLastSibling();
+                if (tail_idx >= element_count - 1) break;
+            }
         }
 
         public bool CheckCreateTail()
@@ -446,13 +470,7 @@ namespace SCL
                     {
                         //Debug.Log("Create new at tail");
                         int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1  - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
-                        for (int i=0; i<k; i++)
-                        {
-                            tail_idx++;
-                            RectTransform new_element = GetNewElement(tail_idx);
-                            new_element.SetAsLastSibling();
-                            if (tail_idx >= element_count - 1) break;
-                        }
+                        CreateAtTail(k);
                         return true;
                     }
                 }
@@ -468,17 +486,9 @@ namespace SCL
                     {
                         //Debug.Log("Create new at tail");
                         int k = (scrollType == ScrollType.Vertical) ? Mathf.Min(Column, ElementCount - 1 - tail_idx) : Mathf.Min(Row, ElementCount - 1 - tail_idx);
-                        for (int i = 0; i < k; i++)
-                        {
-                            tail_idx++;
-                            RectTransform new_element = GetNewElement(tail_idx);
-                            new_element.SetAsLastSibling();
-                            if (tail_idx >= element_count - 1) break;
-                        }
-                        return true;
+                        CreateAtTail(k);
                     }
                 }
-                
             }
             return false;
         }
@@ -543,10 +553,6 @@ namespace SCL
                 // 固定anchor
                 new_element.anchorMin = ElementAnchor;
                 new_element.anchorMax = ElementAnchor;
-            }
-            if (element_idx == 502)
-            {
-                int x = 0;
             }
             new_element.name = element_idx.ToString();
             new_element.sizeDelta = CellSize;
