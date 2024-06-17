@@ -142,6 +142,30 @@ namespace SCL
             
         }
 
+/*        public class ElementList
+        {
+            public LinkedList<RectTransform> list;
+            public int head_idx;
+            public int tail_idx;
+
+            public ElementList()
+            {
+                this.list = new LinkedList<RectTransform>();
+                this.head_idx = -1;
+                this.tail_idx = -1;
+            }
+        }
+
+        private ElementList elementList; 
+        private ElementList ElementList_
+        {
+            get
+            {
+                if (elementList == null)
+                    elementList = new ElementList;
+                return elementList;
+            }
+        }*/
         private RectTransform FirstElementRtf
         {
             get
@@ -193,12 +217,12 @@ namespace SCL
         }
 
         #region Const
-        private Vector2 ElementAnchor = new Vector2(0, 1);
-        private Vector2 ContentAnchorVertical = new Vector2(0.5f, 1);
-        private Vector2 ContentAnchorHorizontal = new Vector2(0, 0.5f);
+        private static Vector2 ElementAnchor = new Vector2(0, 1);
+        private static Vector2 ContentAnchorVertical = new Vector2(0.5f, 1);
+        private static Vector2 ContentAnchorHorizontal = new Vector2(0, 0.5f);
 
-        private Vector2 ContentAnchorVerticalReverse = new Vector2(0.5f, 0);
-        private Vector2 ContentAnchorHorizontalReverse = new Vector2(1, 0.5f);
+        private static Vector2 ContentAnchorVerticalReverse = new Vector2(0.5f, 0);
+        private static Vector2 ContentAnchorHorizontalReverse = new Vector2(1, 0.5f);
         #endregion
         /// <summary>
         /// ∆Ù”√«˙œﬂ
