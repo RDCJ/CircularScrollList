@@ -74,3 +74,5 @@ Packages/packages-lock.json
 ProjectSettings/PackageManagerSettings.asset
 ProjectSettings/ProjectVersion.txt
 Assets/StreamingAssets/build_info
+Assets/bg_easter.png
+Assets/bg_easter.png.meta
