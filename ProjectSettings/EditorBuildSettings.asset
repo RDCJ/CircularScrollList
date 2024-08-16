@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/GestureEvent/Example.unity
+    path: Assets/GestureEvent/Example/Example.unity
     guid: c7263d62c3d8874449680b10b3e7be45
   m_configObjects: {}
