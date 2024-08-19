@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f02415cfd83548944a805b4bc1f41076, type: 3}
   m_Name: TapMoveRecognizer
   m_EditorClassIdentifier: 
+  PrintLog: 1
