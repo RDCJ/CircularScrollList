@@ -8,6 +8,7 @@ namespace GestureEvent
     /// </summary>
     public abstract class GestureRecognizer : ScriptableObject
     {
+        public bool PrintLog = false;
         private Action<IGestureMessage> actions = null;
         /// <summary>
         /// Override this to custom gesture
@@ -28,7 +29,7 @@ namespace GestureEvent
         }
         public void DispatchEvent(IGestureMessage message)
         {
-            //Debug.Log($"Gesture event: {GetType()}, time: {Time.time}");
+            if (PrintLog ) Debug.Log($"Gesture event: {GetType()}, time: {Time.time}");
             actions?.Invoke(message);
         }
     }
