@@ -262,8 +262,9 @@ namespace SCL
             else
             {
                 element_count = value;
-                RefreshGrid();
             }
+            if (gameObject.activeInHierarchy)
+                RefreshGrid();
         }
 
         private void Awake()
@@ -274,12 +275,15 @@ namespace SCL
         private void Start()
         {
             ElementPoolRtf.gameObject.SetActive(false);
-            if (element_count > 0 )
-                RefreshGrid();
             if (scrollType == ScrollType.Vertical)
                 ContentRtf.anchoredPosition = new Vector2(0, ContentRtf.anchoredPosition.y);
             else
                 ContentRtf.anchoredPosition = new Vector2(ContentRtf.anchoredPosition.x, 0);
+            if (dataBank != null)
+            {
+                SetElementCount(dataBank.ElementCount);
+                dataBank.OnElementCountChanged += SetElementCount;
+            }
         }
 
         private void Update()
@@ -297,6 +301,14 @@ namespace SCL
 
             if (enable_curve)
                 UpdateWithCurve();
+        }
+
+        private void OnEnable()
+        {
+            if (dataBank != null)
+            {
+                SetElementCount(dataBank.ElementCount);
+            }
         }
 
         private bool IsOutOfTopBound(RectTransform rtf)

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace SCL
@@ -9,6 +10,8 @@ namespace SCL
     public class IElementDataBank : MonoBehaviour
     {
         public bool OverrideCalcElementPosition;
+        public Action<int> OnElementCountChanged = null;
+        public virtual int ElementCount => 0;
         public virtual void ApplyElementData(RectTransform rtf, int element_idx) { }
         public virtual IElementData GetElementData(int element_idx) { return null; }
         /// <summary>
