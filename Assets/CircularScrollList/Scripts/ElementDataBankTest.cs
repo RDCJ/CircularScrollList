@@ -55,7 +55,7 @@ public class ElementDataBankTest : IElementDataBank
         return null;
     }
 
-    private void Awake()
+    private void Start()
     {
         data = new List<ElementDataTest>();
         randomFloat = new List<float>();
@@ -64,12 +64,7 @@ public class ElementDataBankTest : IElementDataBank
             data.Add(new ElementDataTest($"click: {i}"));
             randomFloat.Add(UnityEngine.Random.Range(-1.0f, 1.0f) * random_noise_scale);
         }
-            
-    }
-
-    private void Start()
-    {
-        
+        OnElementCountChanged?.Invoke(data.Count);
     }
 
     public override Vector3 CalcElementPosition(CircularScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition)

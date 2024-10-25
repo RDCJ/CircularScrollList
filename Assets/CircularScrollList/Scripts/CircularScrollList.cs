@@ -29,43 +29,59 @@ namespace SCL
         #region grid format
         public int Column;
         public int Row;
-        public bool use_prefab_size;
+        public bool UsePrefabSize;
+        /// <summary>
+        /// 根据滚动方向和行列大小，自动计算cellSize
+        /// </summary>
+        public bool AutoFitCellSize;
         public Vector2 cellSize;
         public Vector2 CellSize
         {
             get
             {
-                if (use_prefab_size)
+                if (UsePrefabSize)
                     return ElementPrefabRtf.rect.size;
                 else
                     return cellSize;
             }
         }
         public Vector2 Space;
+        private void AutoCalculateCellSize()
+        {
+            if (scrollType == ScrollType.Vertical)
+            {
+                cellSize.x = (ScrollRtf.rect.width - (Column - 1) * Space.x) / Column;
+            }
+            else
+            {
+                cellSize.y = (ScrollRtf.rect.height - (Row - 1) * Space.y) / Row;
+            }
+        }
         #endregion
+
         /// <summary>
         /// 元素总数
         /// </summary>
         [SerializeField]
-        private int element_count;
+        private int elementCount;
         /// <summary>
         /// 元素预制体
         /// </summary>
-        public GameObject element_prefab;
+        public GameObject ElementPrefab;
         private RectTransform element_prefab_rtf;
         private RectTransform ElementPrefabRtf
         {
             get
             {
-                if (element_prefab_rtf == null || element_prefab_rtf.gameObject != element_prefab)
-                    element_prefab_rtf = element_prefab.GetComponent<RectTransform>();
+                if (element_prefab_rtf == null || element_prefab_rtf.gameObject != ElementPrefab)
+                    element_prefab_rtf = ElementPrefab.GetComponent<RectTransform>();
                 return element_prefab_rtf;
             }
         }
+
         #region component
         [HideInInspector]
         private ScrollRect scrollRect;
-
         public ScrollRect _ScrollRect
         {
             get
@@ -107,6 +123,8 @@ namespace SCL
         }
         public IElementDataBank dataBank;
         #endregion
+
+        #region 对象池
         private Stack<GameObject> element_pool;
         /// <summary>
         /// 对象池
@@ -141,31 +159,31 @@ namespace SCL
             }
             
         }
+        #endregion
+        /*        public class ElementList
+                {
+                    public LinkedList<RectTransform> list;
+                    public int head_idx;
+                    public int tail_idx;
 
-/*        public class ElementList
-        {
-            public LinkedList<RectTransform> list;
-            public int head_idx;
-            public int tail_idx;
+                    public ElementList()
+                    {
+                        this.list = new LinkedList<RectTransform>();
+                        this.head_idx = -1;
+                        this.tail_idx = -1;
+                    }
+                }
 
-            public ElementList()
-            {
-                this.list = new LinkedList<RectTransform>();
-                this.head_idx = -1;
-                this.tail_idx = -1;
-            }
-        }
-
-        private ElementList elementList; 
-        private ElementList ElementList_
-        {
-            get
-            {
-                if (elementList == null)
-                    elementList = new ElementList;
-                return elementList;
-            }
-        }*/
+                private ElementList elementList; 
+                private ElementList ElementList_
+                {
+                    get
+                    {
+                        if (elementList == null)
+                            elementList = new ElementList;
+                        return elementList;
+                    }
+                }*/
         private RectTransform FirstElementRtf
         {
             get
@@ -194,7 +212,7 @@ namespace SCL
         /// <summary>
         /// 元素总数
         /// </summary>
-        public int ElementCount => element_count;
+        public int ElementCount => elementCount;
         /// <summary>
         /// 同屏展示的元素数量
         /// </summary>
@@ -257,11 +275,11 @@ namespace SCL
         {
             if (value < 0)
                 Debug.LogError("[CircularScrollList:SetElementCount] value < 0");
-            else if (value == element_count)
-                Debug.Log("[CircularScrollList:SetElementCount] value == this.element_count");
+            else if (value == elementCount)
+                Debug.Log("[CircularScrollList:SetElementCount] value == this.elementCount");
             else
             {
-                element_count = value;
+                elementCount = value;
             }
             if (gameObject.activeInHierarchy)
                 RefreshGrid();
@@ -270,6 +288,10 @@ namespace SCL
         private void Awake()
         {
             element_pool = new Stack<GameObject>();
+            if (dataBank != null)
+            {
+                dataBank.OnElementCountChanged += SetElementCount;
+            }
         }
 
         private void Start()
@@ -282,7 +304,6 @@ namespace SCL
             if (dataBank != null)
             {
                 SetElementCount(dataBank.ElementCount);
-                dataBank.OnElementCountChanged += SetElementCount;
             }
         }
 
@@ -291,7 +312,7 @@ namespace SCL
             _ScrollRect.horizontal = scrollType == ScrollType.Horizontal;
             _ScrollRect.vertical = scrollType == ScrollType.Vertical;
             UpdateContentSize();
-            if (element_count > 0)
+            if (ElementCount > 0)
             {
                 while (CheckDeleteHead()) ;
                 while (CheckDeleteTail()) ;
@@ -348,7 +369,7 @@ namespace SCL
                 ContentRtf.pivot = Reverse ? ContentAnchorVerticalReverse : ContentAnchorVertical;
                 Vector2 content_size = ContentRtf.sizeDelta;
                 content_size.x = CellSize.x * Column + Space.x * (Column - 1);
-                int row = element_count / Column + (element_count % Column == 0 ? 0 : 1);
+                int row = ElementCount / Column + (ElementCount % Column == 0 ? 0 : 1);
                 content_size.y = CellSize.y * row + Space.y * (row - 1);
                 ContentRtf.sizeDelta = content_size;
             }
@@ -359,7 +380,7 @@ namespace SCL
                 ContentRtf.pivot = Reverse ? ContentAnchorHorizontalReverse : ContentAnchorHorizontal;
                 Vector2 content_size = ContentRtf.sizeDelta;
                 content_size.y = CellSize.y * Row + Space.y * (Row - 1);
-                int column = element_count / Row + (element_count % Row == 0 ? 0 : 1);
+                int column = ElementCount / Row + (ElementCount % Row == 0 ? 0 : 1);
                 content_size.x = CellSize.x * column + Space.x * (column - 1);
                 ContentRtf.sizeDelta = content_size;
             }
@@ -463,7 +484,7 @@ namespace SCL
                     if (need_create)
                     {
                         //Debug.Log("Create new at head");
-                        int k = (scrollType == ScrollType.Vertical) ? (element_count % Column == 0 ? Column : element_count % Column) : (element_count % Row == 0 ? Row : element_count % Row);
+                        int k = (scrollType == ScrollType.Vertical) ? (ElementCount % Column == 0 ? Column : ElementCount % Column) : (ElementCount % Row == 0 ? Row : ElementCount % Row);
                         CreateAtHead(k);
                         return true;
                     }
@@ -482,14 +503,14 @@ namespace SCL
                     new_element.SetAsFirstSibling();
                 else
                     new_element.SetAsLastSibling();
-                if (tail_idx >= element_count - 1) break;
+                if (tail_idx >= ElementCount - 1) break;
             }
         }
 
         public bool CheckCreateTail()
         {
             if (tail_idx - head_idx + 1 >= ElementShowCount) return false;
-            if (tail_idx < element_count - 1)
+            if (tail_idx < ElementCount - 1)
             {
                 RectTransform last_element = LastElementRtf;
                 if (last_element != null)
@@ -585,7 +606,7 @@ namespace SCL
             }
             else
             {
-                new_element = Instantiate(element_prefab, ContentRtf).GetComponent<RectTransform>();
+                new_element = Instantiate(ElementPrefab, ContentRtf).GetComponent<RectTransform>();
                 // 固定anchor
                 new_element.anchorMin = ElementAnchor;
                 new_element.anchorMax = ElementAnchor;
@@ -702,6 +723,21 @@ namespace SCL
             while (ElementPool.Count > 0)
             {
                 element_pool.Pop();
+            }
+        }
+
+        private void OnValidate()
+        {
+            if ( AutoFitCellSize && UsePrefabSize)
+            {
+                AutoFitCellSize = false;
+                UsePrefabSize = false;
+            }
+            Column = Mathf.Max(Column, 1);
+            Row = Mathf.Max(Row, 1);
+            if (AutoFitCellSize)
+            {
+                AutoCalculateCellSize();
             }
         }
     }

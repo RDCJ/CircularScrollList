@@ -37,11 +37,12 @@ public class CircularScrollListEditor : Editor
         RegisterSerializedProperty("SiblingOrderReverse");
         RegisterSerializedProperty("Column", ()=> scrollList.scrollType == CircularScrollList.ScrollType.Vertical);
         RegisterSerializedProperty("Row", () => scrollList.scrollType == CircularScrollList.ScrollType.Horizontal);
-        RegisterSerializedProperty("use_prefab_size");
-        RegisterSerializedProperty("cellSize", () => !scrollList.use_prefab_size);
+        RegisterSerializedProperty("UsePrefabSize", () => scrollList.AutoFitCellSize == false);
+        RegisterSerializedProperty("AutoFitCellSize", () => scrollList.UsePrefabSize == false);
+        RegisterSerializedProperty("cellSize", () => !scrollList.UsePrefabSize);
         RegisterSerializedProperty("Space");
-        RegisterSerializedProperty("element_count");
-        RegisterSerializedProperty("element_prefab");
+        RegisterSerializedProperty("elementCount");
+        RegisterSerializedProperty("ElementPrefab");
         RegisterSerializedProperty("dataBank");
         RegisterSerializedProperty("enable_curve");
         RegisterSerializedProperty("position_offset_curve", ()=>scrollList.enable_curve);
