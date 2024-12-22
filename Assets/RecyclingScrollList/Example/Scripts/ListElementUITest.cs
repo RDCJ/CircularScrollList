@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SCL.Test
+namespace RSL.Test
 {
     public class ListElementUITest : ListElementUIBase<ElementDataTest>
     {

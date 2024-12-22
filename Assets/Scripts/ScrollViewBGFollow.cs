@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SCL
+namespace RSL
 {
     /// <summary>
     /// 控制RawImage的UVRect, 使其跟随ScrollRect的滚动
@@ -11,7 +11,7 @@ namespace SCL
     [RequireComponent(typeof(RawImage))]
     public class ScrollViewBGFollow : MonoBehaviour
     {
-        public CircularScrollList scroll_list;
+        public RecyclingScrollList scroll_list;
         private RawImage bg;
 
         private void Awake()
@@ -25,7 +25,7 @@ namespace SCL
         // Start is called before the first frame update
         void Start()
         {
-            if (scroll_list.scrollType == CircularScrollList.ScrollType.Vertical)
+            if (scroll_list.scrollType == RecyclingScrollList.ScrollType.Vertical)
             {
                 scroll_list._ScrollRect.onValueChanged.AddListener((Vector2 value) => {
                     Rect rect = bg.uvRect;

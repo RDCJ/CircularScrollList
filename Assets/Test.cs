@@ -1,4 +1,4 @@
-using SCL;
+using RSL;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +9,7 @@ public class Test : MonoBehaviour
     public Button button;
     public int element_idx;
     public float viewport_positon;
-    public CircularScrollList circularScrollList;
+    public RecyclingScrollList circularScrollList;
     // Start is called before the first frame update
     void Start()
     {

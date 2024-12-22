@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SCL;
+using RSL;
 
 [Serializable]
 public class ElementDataTest
@@ -45,11 +45,11 @@ public class ElementDataBankTest : ElementDataBankBase<ElementDataTest>
         return null;
     }
 
-    public override Vector3 CalcElementPosition(CircularScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition)
+    public override Vector3 CalcElementPosition(RecyclingScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition)
     {
         float sin_offset = MathF.Sin(element_idx * sin_offset_frequency);
         float random_offset = randomFloat[element_idx];
-        if (scrollType == CircularScrollList.ScrollType.Vertical)
+        if (scrollType == RecyclingScrollList.ScrollType.Vertical)
         {
             return defaultPosition + new Vector3(sin_offset + random_offset, 0, 0) * position_offset_scale;
         }

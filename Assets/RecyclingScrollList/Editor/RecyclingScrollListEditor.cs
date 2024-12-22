@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using SCL;
+using RSL;
 using System;
 using System.Reflection;
 
-[CustomEditor(typeof(CircularScrollList))]
-public class CircularScrollListEditor : Editor
+[CustomEditor(typeof(RecyclingScrollList))]
+public class RecyclingScrollListEditor : Editor
 {
     public delegate bool PropertyShowDelegate();
     class SerializedPropertyExtend
@@ -24,25 +24,24 @@ public class CircularScrollListEditor : Editor
         }
     }
 
-    private CircularScrollList scrollList;
+    private RecyclingScrollList scrollList;
 
     private List<SerializedPropertyExtend> properties;
 
     private void OnEnable()
     {
-        scrollList = (CircularScrollList)target;
+        scrollList = (RecyclingScrollList)target;
         properties = new List<SerializedPropertyExtend>();
         RegisterSerializedProperty("scrollType");
         RegisterSerializedProperty("Reverse");
         RegisterSerializedProperty("SiblingOrderReverse");
-        RegisterSerializedProperty("Column", ()=> scrollList.scrollType == CircularScrollList.ScrollType.Vertical);
-        RegisterSerializedProperty("Row", () => scrollList.scrollType == CircularScrollList.ScrollType.Horizontal);
+        RegisterSerializedProperty("Column", ()=> scrollList.scrollType == RecyclingScrollList.ScrollType.Vertical);
+        RegisterSerializedProperty("Row", () => scrollList.scrollType == RecyclingScrollList.ScrollType.Horizontal);
         RegisterSerializedProperty("UsePrefabSize", () => scrollList.AutoFitCellSize == false);
         RegisterSerializedProperty("AutoFitCellSize", () => scrollList.UsePrefabSize == false);
         RegisterSerializedProperty("cellSize", () => !scrollList.UsePrefabSize);
         RegisterSerializedProperty("Space");
         RegisterSerializedProperty("ElementPrefab");
-        RegisterSerializedProperty("dataBank");
         RegisterSerializedProperty("enable_curve");
         RegisterSerializedProperty("position_offset_curve", ()=>scrollList.enable_curve);
         RegisterSerializedProperty("scale_curve", () => scrollList.enable_curve);
@@ -89,7 +88,7 @@ public class CircularScrollListEditor : Editor
             Debug.Log($"[CircularScrollListEditor.RegisterSerializedProperty] property doesn't exist: {property_name}");
             return;
         }
-        FieldInfo field = typeof(CircularScrollList).GetField(property_name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        FieldInfo field = typeof(RecyclingScrollList).GetField(property_name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Type type = field.FieldType;
         properties.Add(
             new SerializedPropertyExtend(

@@ -1,15 +1,13 @@
-using SCL;
-using System.Collections;
-using System.Collections.Generic;
+using RSL;
 using UnityEngine;
 
-public class CSLExample : MonoBehaviour
+public class RSLExample : MonoBehaviour
 {
-    private CircularScrollList circularScrollList;
+    private RecyclingScrollList circularScrollList;
     // Start is called before the first frame update
     void Start()
     {
-        circularScrollList = this.GetComponent<CircularScrollList>();
+        circularScrollList = this.GetComponent<RecyclingScrollList>();
         circularScrollList.Init(new ElementDataBankTest());
     }
 

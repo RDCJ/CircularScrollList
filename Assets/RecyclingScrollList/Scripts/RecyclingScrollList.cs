@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SCL
+namespace RSL
 {
     [RequireComponent(typeof(ScrollRect))]
-    public class CircularScrollList : MonoBehaviour
+    public class RecyclingScrollList : MonoBehaviour
     {
         public enum ScrollType
         {

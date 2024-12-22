@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SCL
+namespace RSL
 {
     public abstract class ElementDataBankBase<ElementDataType>: IElementDataBank
     {
@@ -34,7 +34,7 @@ namespace SCL
         /// <param name="element_idx"></param>
         /// <param name="defaultPosition"></param>
         /// <returns></returns>
-        public virtual Vector3 CalcElementPosition(CircularScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition) { return defaultPosition; }
+        public virtual Vector3 CalcElementPosition(RecyclingScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition) { return defaultPosition; }
     }
 }
 

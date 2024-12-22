@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SCL
+namespace RSL
 {
     public abstract class ListElementUIBase<ElementDataType> : MonoBehaviour
     {

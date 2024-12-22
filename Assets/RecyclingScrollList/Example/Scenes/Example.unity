@@ -504,8 +504,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6998960095733437167}
   m_HandleRect: {fileID: 6998960095733437166}
   m_Direction: 0
-  m_Value: -222592.9
-  m_Size: 0.91581136
+  m_Value: -10577.5625
+  m_Size: 0.9170833
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -703,14 +703,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6998960094728931469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 506b90475332a7f4ab292d5fff428308, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e2b00f1d29d084cb456b6e6c76251b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   scrollType: 1
   Reverse: 0
   SiblingOrderReverse: 0
   Column: 6
-  Row: 5
+  Row: 1
   UsePrefabSize: 0
   AutoFitCellSize: 1
   cellSize: {x: 214.59999, y: 100}
@@ -719,49 +719,13 @@ MonoBehaviour:
   enable_curve: 0
   position_offset_curve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.08043671
-      value: 0.99894714
-      inSlope: 0.000974473
-      outSlope: 0.000974473
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.000974473
-      outSlope: 0.000974473
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   scale_curve:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -810,7 +774,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 27022846, y: 0.00021362305}
+  m_AnchoredPosition: {x: 1263020.9, y: -0.000030517578}
   m_SizeDelta: {x: 1440, y: 700.8}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &6998960095389928809
@@ -972,8 +936,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6998960095389928811}
   m_HandleRect: {fileID: 6998960095389928810}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9999984
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
