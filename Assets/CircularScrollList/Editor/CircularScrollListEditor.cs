@@ -41,7 +41,6 @@ public class CircularScrollListEditor : Editor
         RegisterSerializedProperty("AutoFitCellSize", () => scrollList.UsePrefabSize == false);
         RegisterSerializedProperty("cellSize", () => !scrollList.UsePrefabSize);
         RegisterSerializedProperty("Space");
-        RegisterSerializedProperty("elementCount");
         RegisterSerializedProperty("ElementPrefab");
         RegisterSerializedProperty("dataBank");
         RegisterSerializedProperty("enable_curve");

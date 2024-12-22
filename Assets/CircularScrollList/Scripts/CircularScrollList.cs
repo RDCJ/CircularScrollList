@@ -58,12 +58,6 @@ namespace SCL
             }
         }
         #endregion
-
-        /// <summary>
-        /// 元素总数
-        /// </summary>
-        [SerializeField]
-        private int elementCount;
         /// <summary>
         /// 元素预制体
         /// </summary>
@@ -160,30 +154,6 @@ namespace SCL
             
         }
         #endregion
-        /*        public class ElementList
-                {
-                    public LinkedList<RectTransform> list;
-                    public int head_idx;
-                    public int tail_idx;
-
-                    public ElementList()
-                    {
-                        this.list = new LinkedList<RectTransform>();
-                        this.head_idx = -1;
-                        this.tail_idx = -1;
-                    }
-                }
-
-                private ElementList elementList; 
-                private ElementList ElementList_
-                {
-                    get
-                    {
-                        if (elementList == null)
-                            elementList = new ElementList;
-                        return elementList;
-                    }
-                }*/
         private RectTransform FirstElementRtf
         {
             get
@@ -212,7 +182,7 @@ namespace SCL
         /// <summary>
         /// 元素总数
         /// </summary>
-        public int ElementCount => elementCount;
+        public int ElementCount => dataBank == null ? 0 : dataBank.ElementCount;
         /// <summary>
         /// 同屏展示的元素数量
         /// </summary>
@@ -257,6 +227,7 @@ namespace SCL
 
         public void RefreshGrid()
         {
+            if (!gameObject.activeInHierarchy) return;
             ReturnAllElement();
             UpdateContentSize();
             for (int i = 0; i < ElementShowCount; i++)
@@ -271,27 +242,10 @@ namespace SCL
             tail_idx = ElementShowCount - 1;
         }
 
-        public void SetElementCount(int value)
-        {
-            if (value < 0)
-                Debug.LogError("[CircularScrollList:SetElementCount] value < 0");
-            else if (value == elementCount)
-                Debug.Log("[CircularScrollList:SetElementCount] value == this.elementCount");
-            else
-            {
-                elementCount = value;
-            }
-            if (gameObject.activeInHierarchy)
-                RefreshGrid();
-        }
-
         private void Awake()
         {
             element_pool = new Stack<GameObject>();
-            if (dataBank != null)
-            {
-                dataBank.OnElementCountChanged += SetElementCount;
-            }
+            
         }
 
         private void Start()
@@ -303,7 +257,7 @@ namespace SCL
                 ContentRtf.anchoredPosition = new Vector2(ContentRtf.anchoredPosition.x, 0);
             if (dataBank != null)
             {
-                SetElementCount(dataBank.ElementCount);
+                RefreshGrid();
             }
         }
 
@@ -328,8 +282,19 @@ namespace SCL
         {
             if (dataBank != null)
             {
-                SetElementCount(dataBank.ElementCount);
+                RefreshGrid();
             }
+        }
+
+        public void Init(IElementDataBank dataBank, GameObject elementPrefab=null)
+        {
+            this.dataBank = dataBank;
+            if (dataBank != null)
+            {
+                dataBank.OnElementCountChanged += (x) => RefreshGrid();
+            }
+            if (elementPrefab != null) this.ElementPrefab = elementPrefab;
+            RefreshGrid();
         }
 
         private bool IsOutOfTopBound(RectTransform rtf)
@@ -360,7 +325,7 @@ namespace SCL
             return false;
         }
 
-        public void UpdateContentSize()
+        private void UpdateContentSize()
         {
             if (scrollType == ScrollType.Vertical)
             {
@@ -386,7 +351,7 @@ namespace SCL
             }
         }
 
-        public bool CheckDeleteHead()
+        private bool CheckDeleteHead()
         {
             if (head_idx > tail_idx) return false;
             RectTransform rtf_tmp = FirstElementRtf;
@@ -412,7 +377,7 @@ namespace SCL
             return false; 
         }
 
-        public bool CheckDeleteTail()
+        private bool CheckDeleteTail()
         {
             if (head_idx > tail_idx) return false;
             RectTransform rtf_tmp = LastElementRtf;
@@ -452,7 +417,7 @@ namespace SCL
             }
         }
 
-        public bool CheckCreateHead()
+        private bool CheckCreateHead()
         {
             if (tail_idx - head_idx + 1 >= ElementShowCount) return false; 
             if (head_idx > 0)
@@ -507,7 +472,7 @@ namespace SCL
             }
         }
 
-        public bool CheckCreateTail()
+        private bool CheckCreateTail()
         {
             if (tail_idx - head_idx + 1 >= ElementShowCount) return false;
             if (tail_idx < ElementCount - 1)
@@ -596,7 +561,7 @@ namespace SCL
             }
         }
 
-        public RectTransform GetNewElement(int element_idx)
+        private RectTransform GetNewElement(int element_idx)
         {
             RectTransform new_element;
             if (ElementPool.Count > 0)
@@ -654,7 +619,7 @@ namespace SCL
         /// </summary>
         /// <param name="element_idx"></param>
         /// <returns></returns>
-        public Vector3 CalcElementPosition(int element_idx)
+        private Vector3 CalcElementPosition(int element_idx)
         {
             Vector3 defaultPosition = CalcDefalutElementPosition(element_idx);
             if (dataBank != null && dataBank.OverrideCalcElementPosition)
@@ -667,7 +632,7 @@ namespace SCL
             }
         }
 
-        public Vector3 CalcDefalutElementPosition(int element_idx)
+        private Vector3 CalcDefalutElementPosition(int element_idx)
         {
             Vector3 pivot_offset = (ElementPrefabRtf.pivot - new Vector2(0.5f, 0.5f)) * CellSize;
             if (scrollType == ScrollType.Vertical)
