@@ -27,17 +27,17 @@ namespace RSL
         {
             if (scroll_list.scrollType == RecyclingScrollList.ScrollType.Vertical)
             {
-                scroll_list._ScrollRect.onValueChanged.AddListener((Vector2 value) => {
+                scroll_list.scrollRect.onValueChanged.AddListener((Vector2 value) => {
                     Rect rect = bg.uvRect;
-                    rect.position = new Vector2(0, (scroll_list._ScrollRect.normalizedPosition.y - (scroll_list.Reverse ? 0 : 1)) * (scroll_list.ContentRtf.rect.height - scroll_list.ScrollRtf.rect.height) / scroll_list.ScrollRtf.rect.height);
+                    rect.position = new Vector2(0, (scroll_list.scrollRect.normalizedPosition.y - (scroll_list.Reverse ? 0 : 1)) * (scroll_list.contentRtf.rect.height - scroll_list.scrollRtf.rect.height) / scroll_list.scrollRtf.rect.height);
                     bg.uvRect = rect;
                 });
             }
             else
             {
-                scroll_list._ScrollRect.onValueChanged.AddListener((Vector2 value) => {
+                scroll_list.scrollRect.onValueChanged.AddListener((Vector2 value) => {
                     Rect rect = bg.uvRect;
-                    rect.position = new Vector2((scroll_list._ScrollRect.normalizedPosition.x - (scroll_list.Reverse ? 1 : 0)) * (scroll_list.ContentRtf.rect.width - scroll_list.ScrollRtf.rect.width) / scroll_list.ScrollRtf.rect.width, 0);
+                    rect.position = new Vector2((scroll_list.scrollRect.normalizedPosition.x - (scroll_list.Reverse ? 1 : 0)) * (scroll_list.contentRtf.rect.width - scroll_list.scrollRtf.rect.width) / scroll_list.scrollRtf.rect.width, 0);
                     bg.uvRect = rect;
                 });
             }

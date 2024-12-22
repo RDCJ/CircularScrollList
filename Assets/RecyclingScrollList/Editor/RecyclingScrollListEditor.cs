@@ -42,9 +42,9 @@ public class RecyclingScrollListEditor : Editor
         RegisterSerializedProperty("cellSize", () => !scrollList.UsePrefabSize);
         RegisterSerializedProperty("Space");
         RegisterSerializedProperty("ElementPrefab");
-        RegisterSerializedProperty("enable_curve");
-        RegisterSerializedProperty("position_offset_curve", ()=>scrollList.enable_curve);
-        RegisterSerializedProperty("scale_curve", () => scrollList.enable_curve);
+        RegisterSerializedProperty("enableCurve");
+        RegisterSerializedProperty("positionOffsetCurve", ()=>scrollList.enableCurve);
+        RegisterSerializedProperty("scaleCurve", () => scrollList.enableCurve);
     }
 
     public override void OnInspectorGUI()
