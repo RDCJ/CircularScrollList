@@ -65,7 +65,7 @@ public class RecyclingScrollListEditor : Editor
         if (GUILayout.Button("Refresh Grid"))
         {
             scrollList.ClearGrid();
-            scrollList.RefreshGrid();
+            scrollList.ReloadAll();
             scrollList.ScrollToElement(0, 0);
         }
 

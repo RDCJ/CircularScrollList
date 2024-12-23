@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RSL
@@ -12,6 +13,8 @@ namespace RSL
 
         public bool OverrideCalcElementPosition {  get; set; }
         public Action DataUpdateEvent {  get; set; }
+        public Action<int> DataDeleteEvent { get; set; }
+        public Action<int> DataAddEvent { get; set; }
         public abstract int ElementCount { get; }
         public void ApplyElementData(RectTransform rtf, int element_idx) 
         {
@@ -29,9 +32,9 @@ namespace RSL
         }
         public abstract ElementDataType GetElementData(int element_idx);
 
-        public virtual void OnRemoveData(ElementDataType data, params object[] args) { }
+        public virtual void RemoveData(ElementDataType data, params object[] args) { }
 
-        public virtual void OnAddData(ElementDataType data, params object[] args) { }
+        public virtual void AddData(ElementDataType data, params object[] args) { }
         /// <summary>
         /// 计算元素位置，可以在defaultPosition的基础上修改，或者重新计算
         /// </summary>

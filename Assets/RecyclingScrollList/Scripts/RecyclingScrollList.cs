@@ -225,12 +225,20 @@ namespace RSL
         /// </summary>
         public AnimationCurve scaleCurve;
 
-        public void RefreshGrid()
+        #region Refresh
+        public void ReloadAll()
         {
             if (!gameObject.activeInHierarchy) return;
+            head_idx = 0;
+            tail_idx = ElementShowCount - 1;
+            ReloadHeadToTail();
+        }
+
+        private void ReloadHeadToTail()
+        {
             ReturnAllElement();
             UpdateContentSize();
-            for (int i = 0; i < ElementShowCount; i++)
+            for (int i = head_idx; i <= tail_idx; i++)
             {
                 var new_element = GetNewElement(i);
                 if (SiblingOrderReverse)
@@ -238,10 +246,10 @@ namespace RSL
                 else
                     new_element.SetAsLastSibling();
             }
-            head_idx = 0;
-            tail_idx = ElementShowCount - 1;
         }
+        #endregion
 
+        #region Mono
         private void Awake()
         {
             element_pool = new Stack<GameObject>();
@@ -257,7 +265,7 @@ namespace RSL
                 contentRtf.anchoredPosition = new Vector2(contentRtf.anchoredPosition.x, 0);
             if (dataBank != null)
             {
-                RefreshGrid();
+                ReloadAll();
             }
         }
 
@@ -284,21 +292,59 @@ namespace RSL
         {
             if (dataBank != null)
             {
-                RefreshGrid();
+                ReloadAll();
             }
         }
+        #endregion
+
+        #region Event
+        private void OnDeleteElement(int element_idx)
+        {
+            tail_idx = Mathf.Min(tail_idx, ElementCount - 1);
+            ReloadHeadToTail();
+        }
+
+        private void OnAddElement(int element_idx)
+        {
+            if (element_idx <= head_idx)
+            {
+                head_idx++;
+                tail_idx++;
+            }
+            else if (tail_idx <= ElementCount - 2)
+            {
+                tail_idx++;
+            }
+
+            ReloadHeadToTail();
+        }
+        private void RegisterEvent()
+        {
+            this.dataBank.DataUpdateEvent += ReloadAll;
+            this.dataBank.DataDeleteEvent += OnDeleteElement;
+            this.dataBank.DataAddEvent += OnAddElement;
+        }
+        private void UnregisterEvent()
+        {
+            this.dataBank.DataUpdateEvent -= ReloadAll;
+            this.dataBank.DataDeleteEvent -= OnDeleteElement;
+            this.dataBank.DataAddEvent -= OnAddElement;
+        }
+        #endregion
 
         public void Init(IElementDataBank dataBank, GameObject elementPrefab=null)
         {
             if (dataBank != null)
             {
                 if (this.dataBank != null)
-                    this.dataBank.DataUpdateEvent -= RefreshGrid;
+                {
+                    UnregisterEvent();
+                }
                 this.dataBank = dataBank;
-                dataBank.DataUpdateEvent += RefreshGrid;
+                RegisterEvent();
             }
             if (elementPrefab != null) this.ElementPrefab = elementPrefab;
-            RefreshGrid();
+            ReloadAll();
         }
 
         private bool IsOutOfTopBound(RectTransform rtf)

@@ -20,7 +20,7 @@ namespace RSL.Test
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => { 
                 Debug.Log(data.click_log);
-                ElementDataBankTest.Instance.OnRemoveData(data);
+                ElementDataBankTest.Instance.RemoveData(data);
             });
             text.text = data.click_log;
         }

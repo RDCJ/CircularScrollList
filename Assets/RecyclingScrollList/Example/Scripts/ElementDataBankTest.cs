@@ -15,7 +15,7 @@ namespace RSL.Test
         }
     }
 
-    public class ElementDataBankTest : ElementDataBankBase<ElementDataTest>
+    public class ElementDataBankTest : CommonDataBank<ElementDataTest>
     {
         private static ElementDataBankTest instance = null;
         public static ElementDataBankTest Instance
@@ -32,29 +32,17 @@ namespace RSL.Test
         public float random_noise_scale;
         public float position_offset_scale;
         public float sin_offset_frequency;
-        public List<ElementDataTest> data;
+        public override List<ElementDataTest> Datas { get; set; }
         private List<float> randomFloat;
-
-        public override int ElementCount => data.Count;
-
         private ElementDataBankTest()
         {
-            data = new List<ElementDataTest>();
+            Datas = new List<ElementDataTest>();
             randomFloat = new List<float>();
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 100; i++)
             {
-                data.Add(new ElementDataTest($"click: {i}"));
+                Datas.Add(new ElementDataTest($"click: {i}"));
                 randomFloat.Add(UnityEngine.Random.Range(-1.0f, 1.0f) * random_noise_scale);
             }
-        }
-
-        public override ElementDataTest GetElementData(int element_idx)
-        {
-            if (data != null && element_idx < data.Count && element_idx >= 0)
-            {
-                return data[element_idx];
-            }
-            return null;
         }
 
         public override Vector3 CalcElementPosition(RecyclingScrollList.ScrollType scrollType, int element_idx, Vector3 defaultPosition)
@@ -69,18 +57,6 @@ namespace RSL.Test
             {
                 return defaultPosition + new Vector3(0, sin_offset + random_offset, 0) * position_offset_scale;
             }
-        }
-
-        public override void OnRemoveData(ElementDataTest _data, params object[] args)
-        {
-            data.Remove(_data);
-            DataUpdateEvent?.Invoke();
-        }
-
-        public override void OnAddData(ElementDataTest _data, params object[] args)
-        {
-            data.Remove(_data);
-            DataUpdateEvent?.Invoke();
         }
     }
 }
