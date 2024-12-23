@@ -266,12 +266,14 @@ namespace RSL
             scrollRect.horizontal = scrollType == ScrollType.Horizontal;
             scrollRect.vertical = scrollType == ScrollType.Vertical;
             UpdateContentSize();
-            if (ElementCount > 0)
+            bool checkEnd = false;
+            while (ElementCount > 0 && !checkEnd)
             {
-                while (CheckDeleteHead()) ;
-                while (CheckDeleteTail()) ;
-                while (CheckCreateHead()) ;
-                while (CheckCreateTail()) ;
+                checkEnd = true;
+                while (CheckDeleteHead()) checkEnd = false;
+                while (CheckDeleteTail()) checkEnd = false;
+                while (CheckCreateHead()) checkEnd = false;
+                while (CheckCreateTail()) checkEnd = false;
             }
 
             if (enableCurve)
@@ -288,10 +290,12 @@ namespace RSL
 
         public void Init(IElementDataBank dataBank, GameObject elementPrefab=null)
         {
-            this.dataBank = dataBank;
             if (dataBank != null)
             {
-                dataBank.OnElementCountChanged += (x) => RefreshGrid();
+                if (this.dataBank != null)
+                    this.dataBank.DataUpdateEvent -= RefreshGrid;
+                this.dataBank = dataBank;
+                dataBank.DataUpdateEvent += RefreshGrid;
             }
             if (elementPrefab != null) this.ElementPrefab = elementPrefab;
             RefreshGrid();

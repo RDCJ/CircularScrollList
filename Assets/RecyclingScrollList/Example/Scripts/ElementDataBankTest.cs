@@ -17,6 +17,18 @@ namespace RSL.Test
 
     public class ElementDataBankTest : ElementDataBankBase<ElementDataTest>
     {
+        private static ElementDataBankTest instance = null;
+        public static ElementDataBankTest Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ElementDataBankTest();
+                }
+                return instance;
+            }
+        }
         public float random_noise_scale;
         public float position_offset_scale;
         public float sin_offset_frequency;
@@ -25,7 +37,7 @@ namespace RSL.Test
 
         public override int ElementCount => data.Count;
 
-        public ElementDataBankTest()
+        private ElementDataBankTest()
         {
             data = new List<ElementDataTest>();
             randomFloat = new List<float>();
@@ -57,6 +69,18 @@ namespace RSL.Test
             {
                 return defaultPosition + new Vector3(0, sin_offset + random_offset, 0) * position_offset_scale;
             }
+        }
+
+        public override void OnRemoveData(ElementDataTest _data, params object[] args)
+        {
+            data.Remove(_data);
+            DataUpdateEvent?.Invoke();
+        }
+
+        public override void OnAddData(ElementDataTest _data, params object[] args)
+        {
+            data.Remove(_data);
+            DataUpdateEvent?.Invoke();
         }
     }
 }

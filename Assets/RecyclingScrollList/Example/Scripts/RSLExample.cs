@@ -10,7 +10,7 @@ namespace RSL.Test
         void Start()
         {
             circularScrollList = this.GetComponent<RecyclingScrollList>();
-            circularScrollList.Init(new ElementDataBankTest());
+            circularScrollList.Init(ElementDataBankTest.Instance);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace RSL
         }
 
         public bool OverrideCalcElementPosition {  get; set; }
-        public Action<int> OnElementCountChanged {  get; set; }
+        public Action DataUpdateEvent {  get; set; }
         public abstract int ElementCount { get; }
         public void ApplyElementData(RectTransform rtf, int element_idx) 
         {
@@ -28,6 +28,10 @@ namespace RSL
             }
         }
         public abstract ElementDataType GetElementData(int element_idx);
+
+        public virtual void OnRemoveData(ElementDataType data, params object[] args) { }
+
+        public virtual void OnAddData(ElementDataType data, params object[] args) { }
         /// <summary>
         /// 计算元素位置，可以在defaultPosition的基础上修改，或者重新计算
         /// </summary>
