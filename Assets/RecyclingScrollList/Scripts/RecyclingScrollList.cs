@@ -718,7 +718,7 @@ namespace RSL
                 viewport_position = (Reverse ? 1 : 0) - viewport_position;
                 int row_idx = element_idx / Column;
                 Vector2 p = contentRtf.anchoredPosition;
-                p.y = row_idx * (CellSize.y + Space.y) * (Reverse ? -1 : 1) + (scrollRtf.rect.height - CellSize.y) * viewport_position;
+                p.y = (row_idx * CellSize.y + (row_idx - 1) * Space.y) * (Reverse ? -1 : 1) + (scrollRtf.rect.height - CellSize.y) * viewport_position;
                 contentRtf.anchoredPosition = p;
             }
             else
@@ -726,7 +726,7 @@ namespace RSL
                viewport_position = viewport_position - (Reverse ? 1 : 0);
                 int column_idx = element_idx / Row;
                 Vector3 p = contentRtf.anchoredPosition;
-                p.x = column_idx * (CellSize.x + Space.x) * (Reverse ? 1 : -1) + (scrollRtf.rect.width - CellSize.x) * viewport_position;
+                p.x = (column_idx * CellSize.x + (column_idx - 1) * Space.x) * (Reverse ? 1 : -1) + (scrollRtf.rect.width - CellSize.x) * viewport_position;
                 contentRtf.anchoredPosition = p;
             }
         }
