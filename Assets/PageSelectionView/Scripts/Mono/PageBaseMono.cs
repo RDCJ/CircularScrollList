@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PageBase : MonoBehaviour, IPageBase
+public class PageBaseMono : MonoBehaviour, IPageBase
 {
     public virtual void OnPageHide()
     {

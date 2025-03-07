@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PageSelectionView : MonoBehaviour
+public class PageSelectionViewMono : MonoBehaviour
 {
     public RectTransform PageSwitchesRtf;
     public RectTransform PagesRtf;
@@ -10,15 +10,15 @@ public class PageSelectionView : MonoBehaviour
 
     public int PageCount => PageToSwitchDic.Count;
     private ToggleGroup toggleGroup;
-    private Dictionary<PageBase, Toggle> PageToSwitchDic = new Dictionary<PageBase, Toggle>();
-    private PageBase CurrentPage = null;
+    private Dictionary<PageBaseMono, Toggle> PageToSwitchDic = new Dictionary<PageBaseMono, Toggle>();
+    private PageBaseMono CurrentPage = null;
 
     private void Awake()
     {
         toggleGroup = PageSwitchesRtf.GetComponent<ToggleGroup>();
     }
 
-    public void AddPage(PageBase new_page)
+    public void AddPage(PageBaseMono new_page)
     {
         if (new_page != null)
         {
@@ -34,7 +34,7 @@ public class PageSelectionView : MonoBehaviour
         }
     }
 
-    public void SwitchToPage(PageBase page)
+    public void SwitchToPage(PageBaseMono page)
     {
         if (!PageToSwitchDic.ContainsKey(page)) return;
         if (CurrentPage == page) return;
@@ -45,11 +45,11 @@ public class PageSelectionView : MonoBehaviour
 
     public void SwitchToPage(int page_idx)
     {
-        PageBase page = PagesRtf.GetChild(page_idx).GetComponent<PageBase>();
+        PageBaseMono page = PagesRtf.GetChild(page_idx).GetComponent<PageBaseMono>();
         SwitchToPage(page);
     }
 
-    public void DeletePage(PageBase page)
+    public void DeletePage(PageBaseMono page)
     {
         Toggle toggle = PageToSwitchDic[page];
         PageToSwitchDic.Remove(page);
@@ -60,7 +60,7 @@ public class PageSelectionView : MonoBehaviour
 
     public void DeletePage(int page_idx)
     {
-        PageBase page = PagesRtf.GetChild(page_idx).GetComponent<PageBase>();
+        PageBaseMono page = PagesRtf.GetChild(page_idx).GetComponent<PageBaseMono>();
         DeletePage(page);
     }
 }
